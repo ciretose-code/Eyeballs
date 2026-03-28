@@ -7,11 +7,12 @@ final class TimerManager: ObservableObject {
     @Published var remainingTime: TimeInterval = 0
     @Published var isIndefinite = false
 
-    private let sleepManager = SleepManager()
+    private let sleepManager: SleepManaging
     private var timer: Timer?
     private var notificationObserver: Any?
 
-    init() {
+    init(sleepManager: SleepManaging = SleepManager()) {
+        self.sleepManager = sleepManager
         notificationObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.willTerminateNotification,
             object: nil,

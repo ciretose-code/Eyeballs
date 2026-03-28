@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "176F01CC-4882-4430-9A95-918F5EC5E26D",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Eyeballs.xcodeproj",
+      "identifier" : "A10006000000000000000000",
+      "name" : "Eyeballs"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Eyeballs.xcodeproj",
+        "identifier" : "B10006000000000000000000",
+        "name" : "EyeballsTests"
+      }
+    }
+  ],
+  "version" : 1
+}

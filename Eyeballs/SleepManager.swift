@@ -1,6 +1,12 @@
 import IOKit.pwr_mgt
 
-final class SleepManager {
+protocol SleepManaging {
+    var isAssertionActive: Bool { get }
+    func enableSleepPrevention() -> Bool
+    func disableSleepPrevention()
+}
+
+final class SleepManager: SleepManaging {
     private var assertionID: IOPMAssertionID = IOPMAssertionID(0)
     private(set) var isAssertionActive = false
 
