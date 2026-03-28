@@ -3,31 +3,9 @@ import Combine
 import AppKit
 
 final class TimerManager: ObservableObject {
-    enum Duration: String, CaseIterable, Identifiable {
-        case fifteenMinutes = "15 Minutes"
-        case thirtyMinutes = "30 Minutes"
-        case oneHour = "1 Hour"
-        case twoHours = "2 Hours"
-        case fourHours = "4 Hours"
-        case indefinite = "Indefinitely"
-
-        var id: String { rawValue }
-
-        var seconds: TimeInterval? {
-            switch self {
-            case .fifteenMinutes: return 15 * 60
-            case .thirtyMinutes: return 30 * 60
-            case .oneHour: return 60 * 60
-            case .twoHours: return 2 * 60 * 60
-            case .fourHours: return 4 * 60 * 60
-            case .indefinite: return nil
-            }
-        }
-    }
-
     @Published var isActive = false
     @Published var remainingTime: TimeInterval = 0
-    @Published var selectedDuration: Duration?
+    @Published var isIndefinite = false
 
     private let sleepManager = SleepManager()
     private var timer: Timer?
@@ -61,15 +39,36 @@ final class TimerManager: ObservableObject {
         return String(format: "%d:%02d", m, s)
     }
 
-    func activate(duration: Duration) {
+    func activate(seconds: TimeInterval) {
         deactivate()
 
         guard sleepManager.enableSleepPrevention() else { return }
 
         isActive = true
-        selectedDuration = duration
+        isIndefinite = false
+        remainingTime = seconds
 
-        if let seconds = duration.seconds {
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            self.remainingTime -= 1
+            if self.remainingTime <= 0 {
+                self.deactivate()
+            }
+        }
+    }
+
+    func activateIndefinitely() {
+        deactivate()
+
+        guard sleepManager.enableSleepPrevention() else { return }
+
+        isActive = true
+        isIndefinite = true
+    }
+
+    func addTime(seconds: TimeInterval) {
+        if isIndefinite {
+            isIndefinite = false
             remainingTime = seconds
             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
                 guard let self else { return }
@@ -78,6 +77,8 @@ final class TimerManager: ObservableObject {
                     self.deactivate()
                 }
             }
+        } else {
+            remainingTime += seconds
         }
     }
 
@@ -86,7 +87,7 @@ final class TimerManager: ObservableObject {
         timer = nil
         sleepManager.disableSleepPrevention()
         isActive = false
+        isIndefinite = false
         remainingTime = 0
-        selectedDuration = nil
     }
 }
