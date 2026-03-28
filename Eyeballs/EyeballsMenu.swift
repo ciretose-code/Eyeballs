@@ -3,7 +3,7 @@ import SwiftUI
 struct EyeballsMenu: View {
     @ObservedObject var timerManager: TimerManager
 
-    private let minuteOptions = [10, 20, 30, 40, 50]
+    private let minuteOptions = [5, 10, 15, 20, 30, 40, 50]
     private let hourOptions = [1, 2, 3, 4, 5, 8, 10, 12, 15, 20, 24]
 
     var body: some View {
