@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct EyeballsApp: App {
-    @StateObject private var timerManager = TimerManager.shared
+    @StateObject private var timerManager = TimerManager()
 
     var body: some Scene {
         MenuBarExtra {

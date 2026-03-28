@@ -3,8 +3,6 @@ import Combine
 import AppKit
 
 final class TimerManager: ObservableObject {
-    static let shared = TimerManager()
-
     @Published var isActive = false
     @Published var remainingTime: TimeInterval = 0
     @Published var isIndefinite = false

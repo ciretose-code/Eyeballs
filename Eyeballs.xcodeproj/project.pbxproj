@@ -13,11 +13,6 @@
 		A10001040000000000000004 /* EyeballsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002040000000000000004 /* EyeballsMenu.swift */; };
 		A10001050000000000000005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10002050000000000000005 /* Assets.xcassets */; };
 		A10001060000000000000006 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A10002080000000000000008 /* AppIcon.icon */; };
-		C10001010000000000000001 /* ActivateEyeballsIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10002010000000000000001 /* ActivateEyeballsIntent.swift */; };
-		C10001020000000000000002 /* ActivateIndefinitelyIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10002020000000000000002 /* ActivateIndefinitelyIntent.swift */; };
-		C10001030000000000000003 /* CheckTimeRemainingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10002030000000000000003 /* CheckTimeRemainingIntent.swift */; };
-		C10001040000000000000004 /* DeactivateEyeballsIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10002040000000000000004 /* DeactivateEyeballsIntent.swift */; };
-		C10001050000000000000005 /* EyeballsShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10002050000000000000005 /* EyeballsShortcuts.swift */; };
 		B10001010000000000000001 /* MockSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002010000000000000001 /* MockSleepManager.swift */; };
 		B10001020000000000000002 /* SleepManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002020000000000000002 /* SleepManagerTests.swift */; };
 		B10001030000000000000003 /* TimerManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002030000000000000003 /* TimerManagerTests.swift */; };
@@ -43,11 +38,6 @@
 		A10002060000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10002070000000000000007 /* Eyeballs.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Eyeballs.entitlements; sourceTree = "<group>"; };
 		A10002080000000000000008 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer; path = AppIcon.icon; sourceTree = "<group>"; };
-		C10002010000000000000001 /* ActivateEyeballsIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivateEyeballsIntent.swift; sourceTree = "<group>"; };
-		C10002020000000000000002 /* ActivateIndefinitelyIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivateIndefinitelyIntent.swift; sourceTree = "<group>"; };
-		C10002030000000000000003 /* CheckTimeRemainingIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckTimeRemainingIntent.swift; sourceTree = "<group>"; };
-		C10002040000000000000004 /* DeactivateEyeballsIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeactivateEyeballsIntent.swift; sourceTree = "<group>"; };
-		C10002050000000000000005 /* EyeballsShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeballsShortcuts.swift; sourceTree = "<group>"; };
 		A10003000000000000000000 /* Eyeballs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eyeballs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10002010000000000000001 /* MockSleepManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSleepManager.swift; sourceTree = "<group>"; };
 		B10002020000000000000002 /* SleepManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepManagerTests.swift; sourceTree = "<group>"; };
@@ -89,7 +79,6 @@
 				A10002020000000000000002 /* SleepManager.swift */,
 				A10002030000000000000003 /* TimerManager.swift */,
 				A10002040000000000000004 /* EyeballsMenu.swift */,
-				C10005000000000000000000 /* Intents */,
 				A10002050000000000000005 /* Assets.xcassets */,
 				A10002080000000000000008 /* AppIcon.icon */,
 				A10002060000000000000006 /* Info.plist */,
@@ -105,18 +94,6 @@
 				B10003000000000000000000 /* EyeballsTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		C10005000000000000000000 /* Intents */ = {
-			isa = PBXGroup;
-			children = (
-				C10002010000000000000001 /* ActivateEyeballsIntent.swift */,
-				C10002020000000000000002 /* ActivateIndefinitelyIntent.swift */,
-				C10002030000000000000003 /* CheckTimeRemainingIntent.swift */,
-				C10002040000000000000004 /* DeactivateEyeballsIntent.swift */,
-				C10002050000000000000005 /* EyeballsShortcuts.swift */,
-			);
-			path = Intents;
 			sourceTree = "<group>";
 		};
 		B10005000000000000000000 /* EyeballsTests */ = {
@@ -226,11 +203,6 @@
 				A10001020000000000000002 /* SleepManager.swift in Sources */,
 				A10001030000000000000003 /* TimerManager.swift in Sources */,
 				A10001040000000000000004 /* EyeballsMenu.swift in Sources */,
-				C10001010000000000000001 /* ActivateEyeballsIntent.swift in Sources */,
-				C10001020000000000000002 /* ActivateIndefinitelyIntent.swift in Sources */,
-				C10001030000000000000003 /* CheckTimeRemainingIntent.swift in Sources */,
-				C10001040000000000000004 /* DeactivateEyeballsIntent.swift in Sources */,
-				C10001050000000000000005 /* EyeballsShortcuts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
