@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EyeballsMenu: View {
     @ObservedObject var timerManager: TimerManager
+    @ObservedObject var launchAtLoginManager: LaunchAtLoginManager
 
     private let minuteOptions = [5, 10, 15, 20, 30, 40, 50]
     private let hourOptions = [1, 2, 3, 4, 5, 8, 10, 12, 15, 20, 24]
@@ -11,6 +12,18 @@ struct EyeballsMenu: View {
             activeMenu
         } else {
             inactiveMenu
+        }
+
+        Divider()
+
+        Button {
+            launchAtLoginManager.toggle()
+        } label: {
+            if launchAtLoginManager.isEnabled {
+                Label("Launch at Login", systemImage: "checkmark")
+            } else {
+                Text("Launch at Login")
+            }
         }
 
         Divider()
