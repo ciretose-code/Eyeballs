@@ -93,6 +93,11 @@ hdiutil attach "$STAGING_DMG" \
 
 cp -r "$APP_PATH" "$MOUNT_DIR/"
 
+mkdir -p "$MOUNT_DIR/.background"
+cp "Assets/DMGBackground.png" "$MOUNT_DIR/.background/DMGBackground.png"
+[ -f "Assets/DMGBackground@2x.png" ] && \
+  cp "Assets/DMGBackground@2x.png" "$MOUNT_DIR/.background/DMGBackground@2x.png"
+
 osascript <<APPLESCRIPT
 tell application "Finder"
   set theDisk to disk "Eyeballs-staging"
@@ -106,6 +111,7 @@ tell application "Finder"
     set viewOptions to icon view options of container window
     set arrangement of viewOptions to not arranged
     set icon size of viewOptions to 128
+    set background picture of viewOptions to file ".background:DMGBackground.png"
     set position of item "${APP_BUNDLE}" of container window to {130, 160}
     set position of item "Applications" of container window to {370, 160}
     update without registering applications

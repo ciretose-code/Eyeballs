@@ -3,12 +3,37 @@ import Combine
 import AppKit
 import UserNotifications
 
+// Isolated countdown state so only leaf views re-render each tick,
+// leaving EyeballsMenu.body (and the NSMenu structure) untouched.
+final class CountdownState: ObservableObject {
+    @Published private(set) var formatted: String = ""
+    @Published private(set) var short: String = ""
+
+    func update(_ remainingTime: TimeInterval) {
+        let total = Int(remainingTime)
+        let h = total / 3600
+        let m = (total % 3600) / 60
+        let s = total % 60
+        formatted = h > 0
+            ? String(format: "%d:%02d:%02d", h, m, s)
+            : String(format: "%d:%02d", m, s)
+        short = String(format: "%d:%02d", h, m)
+    }
+
+    func clear() {
+        formatted = ""
+        short = ""
+    }
+}
+
 final class TimerManager: ObservableObject {
     @Published var isActive = false
-    @Published var remainingTime: TimeInterval = 0
     @Published var isIndefinite = false
 
+    let countdown = CountdownState()
+
     private let sleepManager: SleepManaging
+    private var remainingTime: TimeInterval = 0
     private var timer: Timer?
     private var notificationObserver: Any?
 
@@ -31,17 +56,6 @@ final class TimerManager: ObservableObject {
         deactivate()
     }
 
-    var remainingTimeFormatted: String {
-        let total = Int(remainingTime)
-        let h = total / 3600
-        let m = (total % 3600) / 60
-        let s = total % 60
-        if h > 0 {
-            return String(format: "%d:%02d:%02d", h, m, s)
-        }
-        return String(format: "%d:%02d", m, s)
-    }
-
     func activate(seconds: TimeInterval) {
         deactivate()
 
@@ -50,15 +64,10 @@ final class TimerManager: ObservableObject {
         isActive = true
         isIndefinite = false
         remainingTime = seconds
+        countdown.update(seconds)
         scheduleExpiryNotification(in: seconds)
 
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            self.remainingTime -= 1
-            if self.remainingTime <= 0 {
-                self.deactivate()
-            }
-        }
+        timer = makeCountdownTimer()
     }
 
     func activateIndefinitely() {
@@ -74,16 +83,12 @@ final class TimerManager: ObservableObject {
         if isIndefinite {
             isIndefinite = false
             remainingTime = seconds
+            countdown.update(seconds)
             scheduleExpiryNotification(in: seconds)
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-                guard let self else { return }
-                self.remainingTime -= 1
-                if self.remainingTime <= 0 {
-                    self.deactivate()
-                }
-            }
+            timer = makeCountdownTimer()
         } else {
             remainingTime += seconds
+            countdown.update(remainingTime)
             scheduleExpiryNotification(in: remainingTime)
         }
     }
@@ -96,6 +101,23 @@ final class TimerManager: ObservableObject {
         isActive = false
         isIndefinite = false
         remainingTime = 0
+        countdown.clear()
+    }
+
+    // MARK: - Timer
+
+    /// Scheduled on `.common` so it fires during menu tracking (event-tracking run loop mode).
+    private func makeCountdownTimer() -> Timer {
+        let t = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            self.remainingTime -= 1
+            self.countdown.update(self.remainingTime)
+            if self.remainingTime <= 0 {
+                self.deactivate()
+            }
+        }
+        RunLoop.main.add(t, forMode: .common)
+        return t
     }
 
     // MARK: - Notifications

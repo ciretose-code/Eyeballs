@@ -1,20 +1,7 @@
 {
   "color-space-for-untagged-svg-colors" : "display-p3",
   "fill" : {
-    "linear-gradient" : [
-      "display-p3:0.43922,0.50980,0.21961,1.00000",
-      "srgb:0.54510,0.45098,0.33333,1.00000"
-    ],
-    "orientation" : {
-      "start" : {
-        "x" : 0.5,
-        "y" : 1
-      },
-      "stop" : {
-        "x" : 0.5,
-        "y" : 0.3
-      }
-    }
+    "solid" : "srgb:0.01680,0.19835,1.00000,1.00000"
   },
   "groups" : [
     {
@@ -22,8 +9,8 @@
       "hidden" : false,
       "layers" : [
         {
-          "image-name" : "eye_white_1024.png",
-          "name" : "eye_white_1024"
+          "image-name" : "AppIcon.png",
+          "name" : "AppIcon"
         }
       ],
       "lighting-specializations" : [
