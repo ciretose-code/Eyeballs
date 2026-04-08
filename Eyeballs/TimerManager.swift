@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import AppKit
+import UserNotifications
 
 final class TimerManager: ObservableObject {
     @Published var isActive = false
@@ -20,6 +21,7 @@ final class TimerManager: ObservableObject {
         ) { [weak self] _ in
             self?.deactivate()
         }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
     deinit {
@@ -48,6 +50,7 @@ final class TimerManager: ObservableObject {
         isActive = true
         isIndefinite = false
         remainingTime = seconds
+        scheduleExpiryNotification(in: seconds)
 
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self else { return }
@@ -71,6 +74,7 @@ final class TimerManager: ObservableObject {
         if isIndefinite {
             isIndefinite = false
             remainingTime = seconds
+            scheduleExpiryNotification(in: seconds)
             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
                 guard let self else { return }
                 self.remainingTime -= 1
@@ -80,6 +84,7 @@ final class TimerManager: ObservableObject {
             }
         } else {
             remainingTime += seconds
+            scheduleExpiryNotification(in: remainingTime)
         }
     }
 
@@ -87,8 +92,30 @@ final class TimerManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         sleepManager.disableSleepPrevention()
+        cancelExpiryNotification()
         isActive = false
         isIndefinite = false
         remainingTime = 0
+    }
+
+    // MARK: - Notifications
+
+    private func scheduleExpiryNotification(in seconds: TimeInterval) {
+        cancelExpiryNotification()
+        let warningAt = seconds - 60
+        guard warningAt > 0 else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Eyeballs"
+        content.body = "Screen will sleep in 1 minute."
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: warningAt, repeats: false)
+        let request = UNNotificationRequest(identifier: "eyeballs.expiry", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    private func cancelExpiryNotification() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["eyeballs.expiry"])
     }
 }

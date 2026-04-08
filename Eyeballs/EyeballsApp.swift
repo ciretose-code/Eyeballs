@@ -9,7 +9,12 @@ struct EyeballsApp: App {
         MenuBarExtra {
             EyeballsMenu(timerManager: timerManager, launchAtLoginManager: launchAtLoginManager)
         } label: {
-            Image(systemName: timerManager.isActive ? "eye" : "eye.slash")
+            if timerManager.isActive && !timerManager.isIndefinite {
+                Label(timerManager.remainingTimeFormatted, systemImage: "eye")
+                    .monospacedDigit()
+            } else {
+                Image(systemName: timerManager.isActive ? "eye" : "eye.half.closed")
+            }
         }
         .menuBarExtraStyle(.menu)
     }
