@@ -1,5 +1,24 @@
 import SwiftUI
 
+private struct ActiveStatusLabel: View {
+    @ObservedObject var timerManager: TimerManager
+    @ObservedObject private var countdown: CountdownState
+
+    init(timerManager: TimerManager) {
+        self.timerManager = timerManager
+        self.countdown = timerManager.countdown
+    }
+
+    var body: some View {
+        if timerManager.isIndefinite {
+            Text("Active — Indefinitely")
+        } else {
+            Text("Active — \(countdown.formatted) remaining")
+                .monospacedDigit()
+        }
+    }
+}
+
 struct EyeballsMenu: View {
     @ObservedObject var timerManager: TimerManager
     @ObservedObject var launchAtLoginManager: LaunchAtLoginManager
@@ -57,11 +76,7 @@ struct EyeballsMenu: View {
 
     @ViewBuilder
     private var activeMenu: some View {
-        if timerManager.isIndefinite {
-            Text("Active — Indefinitely")
-        } else {
-            Text("Active — \(timerManager.countdown.formatted) remaining")
-        }
+        ActiveStatusLabel(timerManager: timerManager)
 
         Menu("Add Minutes") {
             ForEach(minuteOptions, id: \.self) { minutes in
@@ -123,5 +138,4 @@ struct EyeballsMenu: View {
         }
     }
 }
-
 
