@@ -1,46 +1,30 @@
 import SwiftUI
 
-private struct MenuBarLabel: View {
-    @ObservedObject var timerManager: TimerManager
-    @ObservedObject var countdown: CountdownState
-    let showRemainingTime: Bool
-
-    init(timerManager: TimerManager, showRemainingTime: Bool) {
-        self.timerManager = timerManager
-        self.countdown = timerManager.countdown
-        self.showRemainingTime = showRemainingTime
-    }
-
-    var body: some View {
-        if timerManager.isActive && !timerManager.isIndefinite && showRemainingTime {
-            HStack(spacing: 4) {
-                Image(systemName: "eye")
-                Text(countdown.short)
-                    .monospacedDigit()
-            }
-        } else {
-            Image(systemName: timerManager.isActive ? "eye" : "eye.half.closed")
-        }
-    }
-}
-
 @main
 struct EyeballsApp: App {
-    @StateObject private var timerManager = TimerManager()
-    @StateObject private var launchAtLoginManager = LaunchAtLoginManager()
-    @StateObject private var releaseCheckManager = ReleaseCheckManager()
-    @AppStorage("showRemainingTimeInMenuBar") private var showRemainingTime = true
+    private let timerManager: TimerManager
+    private let launchAtLoginManager: LaunchAtLoginManager
+    private let releaseCheckManager: ReleaseCheckManager
+    private let statusItemController: StatusItemController
+
+    init() {
+        let timerManager = TimerManager()
+        let launchAtLoginManager = LaunchAtLoginManager()
+        let releaseCheckManager = ReleaseCheckManager()
+
+        self.timerManager = timerManager
+        self.launchAtLoginManager = launchAtLoginManager
+        self.releaseCheckManager = releaseCheckManager
+        statusItemController = StatusItemController(
+            timerManager: timerManager,
+            launchAtLoginManager: launchAtLoginManager,
+            releaseCheckManager: releaseCheckManager
+        )
+    }
 
     var body: some Scene {
-        MenuBarExtra {
-            EyeballsMenu(
-                timerManager: timerManager,
-                launchAtLoginManager: launchAtLoginManager,
-                releaseCheckManager: releaseCheckManager
-            )
-        } label: {
-            MenuBarLabel(timerManager: timerManager, showRemainingTime: showRemainingTime)
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.menu)
     }
 }
