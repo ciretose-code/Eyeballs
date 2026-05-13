@@ -14,8 +14,10 @@
 		A10001040000000000000004 /* EyeballsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002040000000000000004 /* EyeballsMenu.swift */; };
 		A10001050000000000000005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10002050000000000000005 /* Assets.xcassets */; };
 		A10001060000000000000006 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A10002080000000000000008 /* AppIcon.icon */; };
+		A10001070000000000000007 /* ReleaseCheckManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002090000000000000009 /* ReleaseCheckManager.swift */; };
 		B10001010000000000000001 /* MockSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002010000000000000001 /* MockSleepManager.swift */; };
 		B10001020000000000000002 /* SleepManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002020000000000000002 /* SleepManagerTests.swift */; };
+		B10001040000000000000004 /* ReleaseCheckManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002040000000000000004 /* ReleaseCheckManagerTests.swift */; };
 		B10001030000000000000003 /* TimerManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002030000000000000003 /* TimerManagerTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -40,10 +42,12 @@
 		A10002060000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10002070000000000000007 /* Eyeballs.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Eyeballs.entitlements; sourceTree = "<group>"; };
 		A10002080000000000000008 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer; path = AppIcon.icon; sourceTree = "<group>"; };
+		A10002090000000000000009 /* ReleaseCheckManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseCheckManager.swift; sourceTree = "<group>"; };
 		A10003000000000000000000 /* Eyeballs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eyeballs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10002010000000000000001 /* MockSleepManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSleepManager.swift; sourceTree = "<group>"; };
 		B10002020000000000000002 /* SleepManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepManagerTests.swift; sourceTree = "<group>"; };
 		B10002030000000000000003 /* TimerManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManagerTests.swift; sourceTree = "<group>"; };
+		B10002040000000000000004 /* ReleaseCheckManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseCheckManagerTests.swift; sourceTree = "<group>"; };
 		B10003000000000000000000 /* EyeballsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EyeballsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -82,6 +86,7 @@
 				A10002020000000000000002 /* SleepManager.swift */,
 				A10002030000000000000003 /* TimerManager.swift */,
 				A10002040000000000000004 /* EyeballsMenu.swift */,
+				A10002090000000000000009 /* ReleaseCheckManager.swift */,
 				A10002050000000000000005 /* Assets.xcassets */,
 				A10002080000000000000008 /* AppIcon.icon */,
 				A10002060000000000000006 /* Info.plist */,
@@ -106,6 +111,7 @@
 				B10002010000000000000001 /* MockSleepManager.swift */,
 				B10002020000000000000002 /* SleepManagerTests.swift */,
 				B10002030000000000000003 /* TimerManagerTests.swift */,
+				B10002040000000000000004 /* ReleaseCheckManagerTests.swift */,
 			);
 			path = EyeballsTests;
 			sourceTree = "<group>";
@@ -207,6 +213,7 @@
 				A10001020000000000000002 /* SleepManager.swift in Sources */,
 				A10001030000000000000003 /* TimerManager.swift in Sources */,
 				A10001040000000000000004 /* EyeballsMenu.swift in Sources */,
+				A10001070000000000000007 /* ReleaseCheckManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +224,7 @@
 				B10001010000000000000001 /* MockSleepManager.swift in Sources */,
 				B10001020000000000000002 /* SleepManagerTests.swift in Sources */,
 				B10001030000000000000003 /* TimerManagerTests.swift in Sources */,
+				B10001040000000000000004 /* ReleaseCheckManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

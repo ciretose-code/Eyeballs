@@ -22,6 +22,7 @@ private struct ActiveStatusLabel: View {
 struct EyeballsMenu: View {
     @ObservedObject var timerManager: TimerManager
     @ObservedObject var launchAtLoginManager: LaunchAtLoginManager
+    @ObservedObject var releaseCheckManager: ReleaseCheckManager
     @AppStorage("showRemainingTimeInMenuBar") private var showRemainingTime = true
 
     private let minuteOptions = [5, 10, 15, 20, 30, 40, 50]
@@ -65,6 +66,11 @@ struct EyeballsMenu: View {
             get: { launchAtLoginManager.isEnabled },
             set: { _ in launchAtLoginManager.toggle() }
         ))
+
+        Button(releaseCheckManager.isChecking ? "Checking for Updates…" : "Check for Updates…") {
+            releaseCheckManager.checkForUpdates()
+        }
+        .disabled(releaseCheckManager.isChecking)
 
         Divider()
 
@@ -138,4 +144,3 @@ struct EyeballsMenu: View {
         }
     }
 }
-

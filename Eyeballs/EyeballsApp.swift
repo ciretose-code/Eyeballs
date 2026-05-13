@@ -28,11 +28,16 @@ private struct MenuBarLabel: View {
 struct EyeballsApp: App {
     @StateObject private var timerManager = TimerManager()
     @StateObject private var launchAtLoginManager = LaunchAtLoginManager()
+    @StateObject private var releaseCheckManager = ReleaseCheckManager()
     @AppStorage("showRemainingTimeInMenuBar") private var showRemainingTime = true
 
     var body: some Scene {
         MenuBarExtra {
-            EyeballsMenu(timerManager: timerManager, launchAtLoginManager: launchAtLoginManager)
+            EyeballsMenu(
+                timerManager: timerManager,
+                launchAtLoginManager: launchAtLoginManager,
+                releaseCheckManager: releaseCheckManager
+            )
         } label: {
             MenuBarLabel(timerManager: timerManager, showRemainingTime: showRemainingTime)
         }
