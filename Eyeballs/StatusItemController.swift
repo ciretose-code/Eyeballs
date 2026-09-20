@@ -146,7 +146,11 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     private func present(menu: NSMenu) {
         menu.delegate = self
-        statusItem.popUpMenu(menu)
+        // Assigning `menu` makes the button present it on click; clear it afterwards so
+        // the button keeps routing clicks to `handleStatusItemClick` (left vs. right menus).
+        statusItem.menu = menu
+        statusItem.button?.performClick(nil)
+        statusItem.menu = nil
     }
 
     private func makePrimaryMenu() -> NSMenu {
