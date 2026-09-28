@@ -20,6 +20,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private weak var showRemainingTimeItem: NSMenuItem?
     private weak var launchAtLoginItem: NSMenuItem?
     private weak var checkForUpdatesItem: NSMenuItem?
+    private weak var automaticUpdateChecksItem: NSMenuItem?
 
     init(
         timerManager: TimerManager,
@@ -85,6 +86,12 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             .sink { [weak self] isChecking in
                 self?.checkForUpdatesItem?.title = isChecking ? "Checking for Updates…" : "Check for Updates…"
                 self?.checkForUpdatesItem?.isEnabled = !isChecking
+            }
+            .store(in: &cancellables)
+
+        releaseCheckManager.$automaticChecksEnabled
+            .sink { [weak self] isEnabled in
+                self?.automaticUpdateChecksItem?.state = isEnabled ? .on : .off
             }
             .store(in: &cancellables)
 
@@ -229,6 +236,16 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(checkForUpdatesItem)
         self.checkForUpdatesItem = checkForUpdatesItem
 
+        let automaticUpdateChecksItem = NSMenuItem(
+            title: "Automatically Check for Updates",
+            action: #selector(toggleAutomaticUpdateChecks(_:)),
+            keyEquivalent: ""
+        )
+        automaticUpdateChecksItem.target = self
+        automaticUpdateChecksItem.state = releaseCheckManager.automaticChecksEnabled ? .on : .off
+        menu.addItem(automaticUpdateChecksItem)
+        self.automaticUpdateChecksItem = automaticUpdateChecksItem
+
         menu.addItem(NSMenuItem.separator())
 
         let quitItem = NSMenuItem(title: "Quit Eyeballs", action: #selector(quit), keyEquivalent: "q")
@@ -312,6 +329,11 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         releaseCheckManager.checkForUpdates()
     }
 
+    @objc private func toggleAutomaticUpdateChecks(_ sender: NSMenuItem) {
+        releaseCheckManager.toggleAutomaticChecks()
+        sender.state = releaseCheckManager.automaticChecksEnabled ? .on : .off
+    }
+
     @objc private func quit() {
         NSApplication.shared.terminate(nil)
     }
@@ -321,6 +343,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         showRemainingTimeItem = nil
         launchAtLoginItem = nil
         checkForUpdatesItem = nil
+        automaticUpdateChecksItem = nil
     }
 }
 

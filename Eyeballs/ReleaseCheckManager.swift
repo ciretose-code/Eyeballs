@@ -181,19 +181,108 @@ struct GitHubReleaseChecker {
     }
 }
 
+enum ReleaseCheckSchedule {
+    static let automaticChecksEnabledKey = "automaticallyCheckForUpdates"
+    static let lastCheckDateKey = "lastUpdateCheckDate"
+    static let skippedVersionKey = "skippedUpdateVersion"
+
+    static let checkInterval: TimeInterval = 24 * 60 * 60
+    static let pollInterval: TimeInterval = 60 * 60
+    static let launchDelay: TimeInterval = 10
+
+    static func automaticChecksEnabled(using defaults: UserDefaults) -> Bool {
+        guard defaults.object(forKey: automaticChecksEnabledKey) != nil else {
+            return true
+        }
+
+        return defaults.bool(forKey: automaticChecksEnabledKey)
+    }
+
+    static func isCheckDue(lastCheck: Date?, now: Date, interval: TimeInterval = checkInterval) -> Bool {
+        guard let lastCheck else { return true }
+
+        // A last-check date in the future means the clock moved backwards; check again.
+        return now.timeIntervalSince(lastCheck) >= interval || lastCheck > now
+    }
+
+    static func shouldNotify(latestVersion: String, skippedVersion: String?) -> Bool {
+        latestVersion != skippedVersion
+    }
+}
+
 @MainActor
 final class ReleaseCheckManager: ObservableObject {
     @Published private(set) var isChecking = false
+    @Published private(set) var automaticChecksEnabled: Bool
 
     private let makeChecker: () -> GitHubReleaseChecker?
     private let openURL: (URL) -> Void
+    private let defaults: UserDefaults
+    private let now: () -> Date
+    private var pollTimer: Timer?
 
     init(
         makeChecker: @escaping () -> GitHubReleaseChecker? = { GitHubReleaseChecker() },
-        openURL: @escaping (URL) -> Void = { NSWorkspace.shared.open($0) }
+        openURL: @escaping (URL) -> Void = { NSWorkspace.shared.open($0) },
+        defaults: UserDefaults = .standard,
+        now: @escaping () -> Date = Date.init
     ) {
         self.makeChecker = makeChecker
         self.openURL = openURL
+        self.defaults = defaults
+        self.now = now
+        automaticChecksEnabled = ReleaseCheckSchedule.automaticChecksEnabled(using: defaults)
+    }
+
+    /// Checks shortly after launch, then re-evaluates hourly so a check still happens
+    /// roughly once a day even if the Mac was asleep when it would have been due.
+    func startAutomaticChecks() {
+        pollTimer?.invalidate()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + ReleaseCheckSchedule.launchDelay) { [weak self] in
+            self?.checkAutomaticallyIfDue()
+        }
+
+        pollTimer = Timer.scheduledTimer(withTimeInterval: ReleaseCheckSchedule.pollInterval, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.checkAutomaticallyIfDue()
+            }
+        }
+    }
+
+    func toggleAutomaticChecks() {
+        automaticChecksEnabled.toggle()
+        defaults.set(automaticChecksEnabled, forKey: ReleaseCheckSchedule.automaticChecksEnabledKey)
+
+        if automaticChecksEnabled {
+            checkAutomaticallyIfDue()
+        }
+    }
+
+    func checkAutomaticallyIfDue() {
+        guard automaticChecksEnabled, !isChecking else { return }
+
+        let lastCheck = defaults.object(forKey: ReleaseCheckSchedule.lastCheckDateKey) as? Date
+        guard ReleaseCheckSchedule.isCheckDue(lastCheck: lastCheck, now: now()) else { return }
+        guard let checker = makeChecker() else { return }
+
+        isChecking = true
+
+        Task {
+            defer { isChecking = false }
+
+            // Automatic checks stay silent on failure and retry on the next poll.
+            guard let outcome = try? await checker.checkForUpdates() else { return }
+            defaults.set(now(), forKey: ReleaseCheckSchedule.lastCheckDateKey)
+
+            if case .updateAvailable(let currentVersion, let latestVersion, let releasePage) = outcome,
+               ReleaseCheckSchedule.shouldNotify(
+                   latestVersion: latestVersion,
+                   skippedVersion: defaults.string(forKey: ReleaseCheckSchedule.skippedVersionKey)
+               ) {
+                presentUpdate(currentVersion: currentVersion, latestVersion: latestVersion, releasePage: releasePage, allowSkip: true)
+            }
+        }
     }
 
     func checkForUpdates() {
@@ -210,6 +299,7 @@ final class ReleaseCheckManager: ObservableObject {
 
             do {
                 let outcome = try await checker.checkForUpdates()
+                defaults.set(now(), forKey: ReleaseCheckSchedule.lastCheckDateKey)
                 present(outcome)
             } catch {
                 presentError(error)
@@ -218,25 +308,38 @@ final class ReleaseCheckManager: ObservableObject {
     }
 
     private func present(_ outcome: ReleaseCheckOutcome) {
-        let alert = NSAlert()
-        alert.alertStyle = .informational
-
         switch outcome {
         case .updateAvailable(let currentVersion, let latestVersion, let releasePage):
-            alert.messageText = "Eyeballs \(latestVersion) is available"
-            alert.informativeText = "You’re currently running \(currentVersion). Open the GitHub release page to download the latest version?"
-            alert.addButton(withTitle: "Open Release Page")
-            alert.addButton(withTitle: "Not Now")
-
-            if run(alert) == .alertFirstButtonReturn {
-                openURL(releasePage)
-            }
+            presentUpdate(currentVersion: currentVersion, latestVersion: latestVersion, releasePage: releasePage, allowSkip: false)
 
         case .upToDate(let currentVersion):
+            let alert = NSAlert()
+            alert.alertStyle = .informational
             alert.messageText = "You’re up to date"
             alert.informativeText = "Eyeballs \(currentVersion) is the latest release on GitHub."
             alert.addButton(withTitle: "OK")
             _ = run(alert)
+        }
+    }
+
+    private func presentUpdate(currentVersion: String, latestVersion: String, releasePage: URL, allowSkip: Bool) {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = "Eyeballs \(latestVersion) is available"
+        alert.informativeText = "You’re currently running \(currentVersion). Open the GitHub release page to download the latest version?"
+        alert.addButton(withTitle: "Open Release Page")
+        alert.addButton(withTitle: "Not Now")
+        if allowSkip {
+            alert.addButton(withTitle: "Skip This Version")
+        }
+
+        switch run(alert) {
+        case .alertFirstButtonReturn:
+            openURL(releasePage)
+        case .alertThirdButtonReturn:
+            defaults.set(latestVersion, forKey: ReleaseCheckSchedule.skippedVersionKey)
+        default:
+            break
         }
     }
 

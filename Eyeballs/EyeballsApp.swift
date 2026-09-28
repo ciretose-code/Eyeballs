@@ -20,6 +20,7 @@ struct EyeballsApp: App {
             launchAtLoginManager: launchAtLoginManager,
             releaseCheckManager: releaseCheckManager
         )
+        releaseCheckManager.startAutomaticChecks()
     }
 
     var body: some Scene {

@@ -82,6 +82,35 @@ struct ReleaseCheckManagerTests {
             try await checker.checkForUpdates()
         }
     }
+
+    @Test("Automatic checks are enabled by default and respect a stored preference")
+    func automaticChecksDefault() throws {
+        let suiteName = "ReleaseCheckScheduleTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        #expect(ReleaseCheckSchedule.automaticChecksEnabled(using: defaults))
+
+        defaults.set(false, forKey: ReleaseCheckSchedule.automaticChecksEnabledKey)
+        #expect(!ReleaseCheckSchedule.automaticChecksEnabled(using: defaults))
+    }
+
+    @Test("Automatic check is due when never checked or a day has passed")
+    func checkDue() {
+        let now = Date(timeIntervalSinceReferenceDate: 1_000_000)
+
+        #expect(ReleaseCheckSchedule.isCheckDue(lastCheck: nil, now: now))
+        #expect(!ReleaseCheckSchedule.isCheckDue(lastCheck: now.addingTimeInterval(-60 * 60), now: now))
+        #expect(ReleaseCheckSchedule.isCheckDue(lastCheck: now.addingTimeInterval(-24 * 60 * 60), now: now))
+        #expect(ReleaseCheckSchedule.isCheckDue(lastCheck: now.addingTimeInterval(60 * 60), now: now))
+    }
+
+    @Test("Skipped version suppresses automatic notification only for that version")
+    func skippedVersion() {
+        #expect(ReleaseCheckSchedule.shouldNotify(latestVersion: "1.1.9", skippedVersion: nil))
+        #expect(!ReleaseCheckSchedule.shouldNotify(latestVersion: "1.1.9", skippedVersion: "1.1.9"))
+        #expect(ReleaseCheckSchedule.shouldNotify(latestVersion: "1.1.10", skippedVersion: "1.1.9"))
+    }
 }
 
 private final class MockReleaseFetcher: ReleaseFetching {
