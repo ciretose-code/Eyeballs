@@ -15,15 +15,39 @@ set -euo pipefail
 # ── Config ─────────────────────────────────────────────────────────────────────
 SCHEME="Eyeballs"
 PROJECT="Eyeballs.xcodeproj"
-EXPORT_OPTIONS="Scripts/ExportOptions.plist"
+EXPORT_OPTIONS_TEMPLATE="Scripts/ExportOptions.plist.template"
+EXPORT_OPTIONS="Scripts/ExportOptions.plist"   # generated; gitignored
 NOTARY_PROFILE="eyeballs-notary"   # keychain profile name from store-credentials
 APP_NAME="Eyeballs"
+
+# Resolve Apple Team ID from the environment or Config/Local.xcconfig (never committed).
+resolve_team_id() {
+  if [ -n "${DEVELOPMENT_TEAM:-}" ]; then
+    printf '%s' "$DEVELOPMENT_TEAM"
+    return
+  fi
+  if [ -f Config/Local.xcconfig ]; then
+    local team
+    team=$(sed -n 's/^DEVELOPMENT_TEAM[[:space:]]*=[[:space:]]*//p' Config/Local.xcconfig | tr -d '[:space:]' | head -1)
+    if [ -n "$team" ] && [ "$team" != "YOUR_TEAM_ID" ]; then
+      printf '%s' "$team"
+      return
+    fi
+  fi
+  echo "error: set DEVELOPMENT_TEAM or copy Config/Local.xcconfig.template → Config/Local.xcconfig" >&2
+  exit 1
+}
 
 # ── Derived values ─────────────────────────────────────────────────────────────
 ARCHIVE_PATH="build/${SCHEME}.xcarchive"
 EXPORT_PATH="build/export"
+TEAM_ID="$(resolve_team_id)"
 
 mkdir -p build
+
+# Materialize export options with the local Team ID (placeholder stays out of git).
+sed "s/TEAM_ID_PLACEHOLDER/${TEAM_ID}/" "$EXPORT_OPTIONS_TEMPLATE" > "$EXPORT_OPTIONS"
+echo "▶ Using Team ID from local config (not committed)"
 
 # ── 1. Increment build number ──────────────────────────────────────────────────
 # MARKETING_VERSION lives in build settings (Info.plist is empty); read via xcodebuild
