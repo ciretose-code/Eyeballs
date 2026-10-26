@@ -53,6 +53,8 @@
 		B10002040000000000000004 /* ReleaseCheckManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseCheckManagerTests.swift; sourceTree = "<group>"; };
 		B10002050000000000000005 /* EyeballsMenuTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeballsMenuTests.swift; sourceTree = "<group>"; };
 		B10003000000000000000000 /* EyeballsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EyeballsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0A1F1000000000000000001 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		C0A1F1000000000000000002 /* Local.xcconfig.template */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig.template; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,9 +75,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C0A1F1000000000000000003 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C0A1F1000000000000000001 /* Shared.xcconfig */,
+				C0A1F1000000000000000002 /* Local.xcconfig.template */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		A10005000000000000000000 = {
 			isa = PBXGroup;
 			children = (
+				C0A1F1000000000000000003 /* Config */,
 				A10005010000000000000000 /* Eyeballs */,
 				B10005000000000000000000 /* EyeballsTests */,
 				A10005020000000000000000 /* Products */,
@@ -249,6 +261,7 @@
 /* Begin XCBuildConfiguration section */
 		A1000A010000000000000000 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0A1F1000000000000000001 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -283,7 +296,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 6D39SX3E6V;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -314,6 +326,7 @@
 		};
 		A1000A020000000000000000 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0A1F1000000000000000001 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -348,7 +361,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 6D39SX3E6V;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;

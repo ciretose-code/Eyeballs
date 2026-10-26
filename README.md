@@ -19,6 +19,8 @@ Eyeballs sits in your menu bar and uses an IOKit power assertion to keep your di
 # Clone the repo
 git clone https://github.com/ciretose-code/Eyeballs.git
 cd Eyeballs
+cp Config/Local.xcconfig.template Config/Local.xcconfig
+# Set DEVELOPMENT_TEAM in Config/Local.xcconfig to your Apple Team ID
 
 # Build
 xcodebuild -project Eyeballs.xcodeproj -scheme Eyeballs build
@@ -27,7 +29,7 @@ xcodebuild -project Eyeballs.xcodeproj -scheme Eyeballs build
 xcodebuild -project Eyeballs.xcodeproj -scheme Eyeballs -testPlan Eyeballs test
 ```
 
-Open `Eyeballs.xcodeproj` in Xcode to build and run directly.
+`Config/Local.xcconfig` is gitignored so Team IDs stay out of the repo. Open `Eyeballs.xcodeproj` in Xcode to build and run directly.
 
 ## Architecture
 
