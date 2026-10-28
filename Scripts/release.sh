@@ -3,9 +3,13 @@
 #
 # One-time credential setup (stores in your keychain, never needs repeating):
 #   xcrun notarytool store-credentials "eyeballs-notary" \
-#     --key ~/.private_keys/AuthKey_<KEY_ID>.p8 \
+#     --key ~/Code/.private_keys/AuthKey_<KEY_ID>.p8 \
 #     --key-id <KEY_ID> \
 #     --issuer <ISSUER_ID>
+#
+# Release signing (Hash/Check): minisign secret key at
+#   ~/Code/.private_keys/ciretose.key
+# Override with MINISIGN_SECRET_KEY if needed. Signing prompts for the key password.
 #
 # Usage:
 #   ./Scripts/release.sh
@@ -19,6 +23,7 @@ EXPORT_OPTIONS_TEMPLATE="Scripts/ExportOptions.plist.template"
 EXPORT_OPTIONS="Scripts/ExportOptions.plist"   # generated; gitignored
 NOTARY_PROFILE="eyeballs-notary"   # keychain profile name from store-credentials
 APP_NAME="Eyeballs"
+MINISIGN_SECRET_KEY="${MINISIGN_SECRET_KEY:-$HOME/Code/.private_keys/ciretose.key}"
 
 # Resolve Apple Team ID from the environment or Config/Local.xcconfig (never committed).
 resolve_team_id() {
@@ -171,14 +176,30 @@ xcrun stapler staple "$DMG_PATH"
 echo "▶ Verifying staple..."
 xcrun stapler validate "$DMG_PATH"
 
-# ── 8. Publish GitHub release ─────────────────────────────────────────────────
+# ── 8. Sign checksums for Hash/Check ──────────────────────────────────────────
+echo "▶ Signing SHA256SUMS with minisign..."
+command -v minisign >/dev/null || { echo "error: minisign not installed (brew install minisign)" >&2; exit 1; }
+[ -f "$MINISIGN_SECRET_KEY" ] || { echo "error: minisign secret key not found: ${MINISIGN_SECRET_KEY}" >&2; exit 1; }
+SUMS_PATH="build/SHA256SUMS"
+(
+  cd "$(dirname "$DMG_PATH")"
+  shasum -a 256 "$(basename "$DMG_PATH")"
+) > "$SUMS_PATH"
+minisign -Sm "$SUMS_PATH" -s "$MINISIGN_SECRET_KEY" \
+  -t "SHA256SUMS for $(basename "$DMG_PATH")"
+SIG_PATH="${SUMS_PATH}.minisig"
+echo "▶ ${SUMS_PATH} + ${SIG_PATH}"
+
+# ── 9. Publish GitHub release ─────────────────────────────────────────────────
 echo "▶ Publishing GitHub release ${TAG}..."
 gh release create "$TAG" \
   "$DMG_PATH" \
+  "$SUMS_PATH" \
+  "$SIG_PATH" \
   --title "${APP_NAME} ${TAG}" \
   --generate-notes
 
-# ── 9. Commit and push incremented build number ───────────────────────────────
+# ── 10. Commit and push incremented build number ──────────────────────────────
 echo "▶ Committing build number ${BUILD}..."
 git add "$PROJECT/project.pbxproj"
 git commit -m "Release ${TAG} (build ${BUILD})"
@@ -187,3 +208,4 @@ git push
 echo ""
 echo "✅ Released: ${TAG}"
 echo "   DMG: ${DMG_PATH}"
+echo "   Checksums: ${SUMS_PATH} (signed)"
