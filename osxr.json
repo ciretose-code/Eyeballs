@@ -1,0 +1,11 @@
+{
+  "scheme": "Eyeballs",
+  "project": "Eyeballs.xcodeproj",
+  "appName": "Eyeballs",
+  "notaryProfile": "eyeballs-notary",
+  "versionSource": "agvtool",
+  "dmgBackground": "Assets/DMGBackground.png",
+  "releaseBranch": "main",
+  "runTests": false,
+  "minisignPublicKeyURL": "https://ciretose.com/ciretose.pub"
+}
